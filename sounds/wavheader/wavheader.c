@@ -35,10 +35,13 @@ static long get_pcm_filesize(FILE* pcm_file_hd){
      return -1;
 }
 
+
+
 int add_wav_header(unsigned int bitrate, unsigned int channels, char* pcm_filename, char* output_file){
     int result;
     long pcmsize = -2;
     unsigned int buffer[1024];
+
     wavheader wavh = {"RIFF", 0, "WAVE", "fmt ", 16, 1, 1, 44100, 44100, 1, 16, "data", 0};
 
     FILE* pcmh = fopen(pcm_filename, "rb");
@@ -46,10 +49,11 @@ int add_wav_header(unsigned int bitrate, unsigned int channels, char* pcm_filena
 	err(EXIT_FAILURE, "failed to open %s\n", pcm_filename);
     }
 
-    pcmsize =get_pcm_filesize(pcmh);
+    pcmsize = get_pcm_filesize(pcmh);
     if(pcmsize < 0){
 	err(EXIT_FAILURE, "file size error %ld / %s\n", pcmsize, pcm_filename);
     }
+
     int buffer_coeff = 16 / 8;
     wavh.channels = channels;
     wavh.sampling_rate = bitrate;
