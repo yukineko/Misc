@@ -1,3 +1,4 @@
+core
 *.exe
 *.o
 *.wav
@@ -5,3 +6,4 @@ a.out
 through
 wavheader
 delay
+echo_delay
