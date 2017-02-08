@@ -22,7 +22,7 @@ int readWavHeader(const char* path, wavheader* header){
 void addWavHeader(const char* path, wavheader* header){
     FILE* f = fopen(path, "wb");
     if(f == NULL){
-        fprintf(stderr, "can't ooen file %s", path);
+        fprintf(stderr, "can't open file %s", path);
         exit(-2);
     }
     fseek(f, 0, SEEK_SET);
@@ -51,5 +51,3 @@ void dumpWavHeader(wavheader* header){
     printf("DATA      \t%s\n", header->data);
     printf("datasize  \t%d\n\n\n", header->datasize);
 }
-
-

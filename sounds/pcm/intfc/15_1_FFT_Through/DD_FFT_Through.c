@@ -20,18 +20,18 @@
 //                                           //
 //                                           //
 ///////////////////////////////////////////////
-static double Wr[FFT_SIZE+1],Wi[FFT_SIZE+1];                // FFT 重み
-static double Fr[FFT_SIZE+1],Fi[FFT_SIZE+1],Xr[FFT_SIZE+1],Xi[FFT_SIZE+1]; //実部と虚部
-static double xin[FFT_SIZE+1],z[FFT_SIZE+1];                // FFT入力と出力
-static double Xamp[FFT_SIZE+1];                             // 振幅スペクトル
-static double omega;                                        // FFT角周波数
-static int    St,br[FFT_SIZE+1];                            // FFTステージ番号，ビット反転
+static double Wr[FFT_SIZE+1], Wi[FFT_SIZE+1];                // FFT 重み
+static double Fr[FFT_SIZE+1], Fi[FFT_SIZE+1], Xr[FFT_SIZE+1], Xi[FFT_SIZE+1]; //実部と虚部
+static double xin[FFT_SIZE+1], z[FFT_SIZE+1];                // FFT入力と出力
+static double Xamp[FFT_SIZE+1];                              // 振幅スペクトル
+static double omega;                                         // FFT角周波数
+static int    St, br[FFT_SIZE+1];                            // FFTステージ番号，ビット反転
 
-void bitr( void );                                          // ビット反転用関数の宣言
-void fft ( void );                                          // FFT関数の宣言
-void Wnk ( void );                                          // FFTバタフライ(BF)演算の重み関数の宣言
-void ifft( void );                                          // IFFT関数の宣言
-void init( void );                                          // FFT関連変数の初期設定
+void bitr( void );                                           // ビット反転用関数の宣言
+void fft ( void );                                           // FFT関数の宣言
+void Wnk ( void );                                           // FFTバタフライ(BF)演算の重み関数の宣言
+void ifft( void );                                           // IFFT関数の宣言
+void init( void );                                           // FFT関連変数の初期設定
 
 ///////////////////////////////////////////////
 //                                           //
@@ -40,30 +40,31 @@ void init( void );                                          // FFT関連変数の初期
 ///////////////////////////////////////////////
 void init(void){
     int i;
-    St=log((double)FFT_SIZE)/log(2.0)+0.5;                  // FFTアルゴリズムの段数の算出 +0.5はintへの対応
-    omega=2.0*M_PI/FFT_SIZE;
-    bitr();Wnk();
+    St = log((double)FFT_SIZE) / log(2.0) + 0.5;                  // FFTアルゴリズムの段数の算出 +0.5はintへの対応
+    omega = 2.0 * M_PI / FFT_SIZE;
+    bitr();
+    Wnk();
 }
 
 void bitr( void ){                                          // ビット反転
     int loop,i,j;
-    br[0]=0;                                                // 0番目は0
-    br[1]=FFT_SIZE/2;                                       // 1番目はN/2
-    loop=1;
-    for(j=0;j<St-1;j++){
-        br[loop*2]=br[loop]/2;
-        loop=loop*2;
-        for(i=1;i<loop;i++){
-            br[loop+i]=br[loop]+br[i];
+    br[0] = 0;           // 0番目は0
+    br[1] = FFT_SIZE / 2;// 1番目はN/2
+    loop = 1;
+    for(j = 0; j < St - 1; j++){
+        br[loop * 2] = br[loop] / 2;
+        loop = loop * 2;
+        for(i = 1 ; i < loop; i++){
+            br[loop + i] = br[loop] + br[i];
         }
     }
 }
 
 void Wnk(void){                                            // 重みの計算
     int i;
-    for(i=0;i<FFT_SIZE/2;i++){
-        Wr[i]=cos(omega*i);                                // 重み実部
-        Wi[i]=sin(omega*i);                                // 重み虚部
+    for(i=0; i < FFT_SIZE / 2; i++){
+        Wr[i] = cos(omega * i);                                // 重み実部
+        Wi[i] = sin(omega * i);                                // 重み虚部
     }
 }
 
@@ -76,26 +77,26 @@ void fft( void ){
     int _2_s,_2_s_1,roop,l,m,p;
     int s,j,k;
     double Wxmr,Wxmi;
-    for(j=0;j<FFT_SIZE;j++){                                // FFT入力の設定
-        Fr[br[j]]=xin[j];                                   // 入力
-        Fi[br[j]]=0.0;
+    for(j = 0;j < FFT_SIZE; j++){                                // FFT入力の設定
+        Fr[br[j]] = xin[j];                                   // 入力
+        Fi[br[j]] = 0.0;
     }
-    _2_s=1;
-    for(s=1;s<=St;s++){                                     // ステージ回繰り返し
-        _2_s_1=_2_s;
-        _2_s=_2_s*2;
-        roop=FFT_SIZE/_2_s;
-        for(j=0;j<roop;j++){                                // DFT繰り返し
-            for(k=0;k<_2_s_1;k++){                          // BF演算繰り返し
-                l=_2_s*j+k;                                 // BFの上入力番号
-                m=_2_s_1*(2*j+1)+k;                         // BFの下入力番号
-                p=roop*k;                                   // 下入力への重み番号
-                Wxmr=Fr[m]*Wr[p]+Fi[m]*Wi[p];               // 重み×下入力の実部
-                Wxmi=Fi[m]*Wr[p]-Fr[m]*Wi[p];               // 重み×下入力の虚部
-                Xr[m]=Fr[m]=Fr[l]-Wxmr;                     // BFの下出力の実部
-                Xi[m]=Fi[m]=Fi[l]-Wxmi;                     // BFの下出力の虚部
-                Xr[l]=Fr[l]=Fr[l]+Wxmr;                     // BFの上出力の実部
-                Xi[l]=Fi[l]=Fi[l]+Wxmi;                     // BFの上出力の虚部
+    _2_s = 1;
+    for(s = 1; s <= St; s++){                                     // ステージ回繰り返し
+        _2_s_1 =_2_s;
+        _2_s = _2_s*2;
+        roop = FFT_SIZE / _2_s;
+        for(j=0; j < roop; j++){                                // DFT繰り返し
+            for(k=0; k< _2_s_1; k++){                          // BF演算繰り返し
+                l = _2_s * j+k;                                 // BFの上入力番号
+                m = _2_s_1 * (2 * j + 1) + k;                         // BFの下入力番号
+                p=roop * k;                                   // 下入力への重み番号
+                Wxmr = Fr[m] * Wr[p] + Fi[m] * Wi[p];               // 重み×下入力の実部
+                Wxmi = Fi[m] * Wr[p] - Fr[m] * Wi[p];               // 重み×下入力の虚部
+                Xr[m] = Fr[m] = Fr[l] - Wxmr;                     // BFの下出力の実部
+                Xi[m] = Fi[m] = Fi[l] - Wxmi;                     // BFの下出力の虚部
+                Xr[l] = Fr[l] = Fr[l] + Wxmr;                     // BFの上出力の実部
+                Xi[l] = Fi[l] = Fi[l] + Wxmi;                     // BFの上出力の虚部
             }
         }
     }
@@ -223,11 +224,11 @@ int main(int argc, char **argv){
     printf("Wave data is\n");
     fseek(f1, 22L, SEEK_SET);                               // チャネル情報位置に移動
     fread ( &tmp1, sizeof(unsigned short), 1, f1);          // チャネル情報読込 2Byte
-    ch=tmp1;                                                // 入力チャネル数の記録
+    ch = tmp1;                                                // 入力チャネル数の記録
     fread ( &tmp2, sizeof(unsigned long), 1, f1);           // サンプリング周波数の読込 4Byte
     Fs = tmp2;                                              // サンプリング周波数の記録
     fseek(f1, 40L, SEEK_SET);                               // サンプル数情報位置に移動
-    fread ( &tmp2, sizeof(unsigned long), 1, f1);           // データのサンプル数取得 4Byte
+    fread( &tmp2, sizeof(unsigned long), 1, f1);           // データのサンプル数取得 4Byte
     len=tmp2/2/ch;                                          // 音声の長さの記録 (2Byteで1サンプル)
 
     printf("Channel       = %d ch\n",  ch);                 // 入力チャネル数の表示
@@ -247,7 +248,7 @@ int main(int argc, char **argv){
     BytePerSample = channel*2;                              // 1サンプル当たりのバイト数
     sscanf(argv[1],"%[^-^.]s", outname);                    // 入力ファイル名取得 (拡張子除外)
     strcat(outname,"_output.wav");                          // outname="入力ファイル名_output.wav"
-    f2=fopen(outname,"wb");                                 // 出力ファイルオープン．存在しない場合は作成される
+    f2 = fopen(outname,"wb");                                 // 出力ファイルオープン．存在しない場合は作成される
 
     //////////////////////////////////////
     //                                  //
@@ -279,11 +280,13 @@ int main(int argc, char **argv){
     ///////////////////////////////////
     fseek(f1, 44L, SEEK_SET);                               // 音声データ開始位置に移動
     while(1){                                               // メインループ
-        if(fread( &input, sizeof(short), 1,f1) < 1){        // 音声を input に読込み
-            if( t_out > len+add_len ) break;                // ループ終了判定
-            else input=0;                                   // ループ継続かつ音声読込み終了なら input=0
+        if(fread( &input, sizeof(short), 1, f1) < 1){        // 音声を input に読込み
+            if( t_out > len + add_len ){
+                break;                // ループ終了判定
+            }
+            else input = 0;                                   // ループ継続かつ音声読込み終了なら input=0
         }
-        s[t] = input/32768.0;                               // 音声の最大値を1とする(正規化)
+        s[t] = input / 32768.0;                               // 音声の最大値を1とする(正規化)
 
 
 //************************************************************************//
@@ -298,14 +301,14 @@ int main(int argc, char **argv){
         //                                                //
         ////////////////////////////////////////////////////
 
-        x[l] = x1[l];                                       // FFT_SIZE/2までの入力をx[l]に格納
-        x1[l]= x[FFT_SIZE/2+l]=s[t];                        // FFT_SIZE/2以降の入力をx[l]に格納
-        y[t] = (z[l]+z1[l])/FFT_SIZE;                       // IFFTで得た出力
-        z1[l]= z[FFT_SIZE/2+l];                             // ハーフオーバーラップ用に出力記録
+        x[l]  = x1[l];                                      // FFT_SIZE/2までの入力をx[l]に格納
+        x1[l] = x[FFT_SIZE / 2 + l] = s[t];                        // FFT_SIZE/2以降の入力をx[l]に格納
+        y[t]  = (z[l] + z1[l]) / FFT_SIZE;                       // IFFTで得た出力
+        z1[l] = z[FFT_SIZE / 2 + l];                             // ハーフオーバーラップ用に出力記録
 
-        if( l>=FFT_SIZE/2){                                 // 半フレームごとにFFTを実行
-            for(i=0;i<FFT_SIZE;i++){
-                xin[i]=x[i]*0.5*(1.0-cos(2.0*M_PI*i/(double)FFT_SIZE));// 窓関数をかける
+        if( l >= FFT_SIZE / 2){                                 // 半フレームごとにFFTを実行
+            for(i = 0; i < FFT_SIZE; i++){
+                xin[i] = x[i] * 0.5 * (1.0 - cos(2.0 * M_PI * i / (double)FFT_SIZE));// 窓関数をかける
             }
             fft();                                          // FFT
             ///////////////////////////
@@ -314,25 +317,25 @@ int main(int argc, char **argv){
             //                       //
             ///////////////////////////
             for(i=0;i<FFT_SIZE;i++){
-                Xr[i]=Xr[i];                                //実部の処理
-                Xi[i]=Xi[i];                                //虚部の処理
+                Xr[i] = Xr[i];                                //実部の処理
+                Xi[i] = Xi[i];                                //虚部の処理
             }
 
             ifft();                                         // IFFT
-            l=0;
+            l = 0;
         }
         l++;                                                // FFT用の時刻管理
 
 //************************************************************************//
 
 //        y[t] = atan(y[t])/(M_PI/2.0);                       // クリップ防止
-        output = y[t]*32767;                                // 出力を整数化
+        output = y[t] * 32767;                                // 出力を整数化
         fwrite(&output, sizeof(short), 1, f2);              // 結果の書き出し
-        if(ch==2){                                          // ステレオ入力の場合
-            if(fread(&input, sizeof(short), 1, f1)<1) break;// Rchのカラ読み込み
+        if(ch == 2){                                          // ステレオ入力の場合
+            if(fread(&input, sizeof(short), 1, f1) < 1) break;// Rchのカラ読み込み
             fwrite(&output, sizeof(short), 1, f2);          // Rch書き込み(=Lch)
         }
-        t=(t+1)%MEM_SIZE;                                   // 時刻 t の更新
+        t=(t+1) % MEM_SIZE;                                   // 時刻 t の更新
         t_out++;                                            // ループ終了時刻の計測
     }
     fclose(f1);                                             // 入力ファイルを閉じる
