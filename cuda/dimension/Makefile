@@ -1,13 +1,13 @@
 CC=gcc
 CXX=g++
-COPT= -std=c99 -O0 -g
-CXXOPT= -std=c++11 -O0 -g
+COPT= -std=c99 -O0 -g -Wall
+CXXOPT= -std=c++11 -O0 -g -Wall
 
 NVCC=nvcc
-NVCOPT= -arch=sm_20  -O0 -g -Wall
+NVCOPT= -arch=sm_20 -O0 -g 
 
-TARGET=sumarray
-OBJC=sumarray.cu.o
+TARGET=dimenstion
+OBJC=dimension.cu.o
 .PHONY: all clean
 
 all: $(OBJC)
