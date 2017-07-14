@@ -1,0 +1,157 @@
+	.syntax unified
+	.arch armv7-a
+	.eabi_attribute 27, 3
+	.eabi_attribute 28, 1
+	.fpu neon
+	.eabi_attribute 20, 1
+	.eabi_attribute 21, 1
+	.eabi_attribute 23, 3
+	.eabi_attribute 24, 1
+	.eabi_attribute 25, 1
+	.eabi_attribute 26, 2
+	.eabi_attribute 30, 2
+	.eabi_attribute 34, 1
+	.eabi_attribute 18, 4
+	.thumb
+	.file	"sample.c"
+	.global	__aeabi_ldivmod
+	.text
+	.align	2
+	.global	int_average
+	.thumb
+	.thumb_func
+	.type	int_average, %function
+int_average:
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	subs	r2, r1, #0
+	ble	.L14
+	push	{r3, r4, r5, r6, r7, lr}
+	sbfx	r3, r0, #2, #1
+	and	r3, r3, #3
+	cmp	r3, r2
+	it	cs
+	movcs	r3, r2
+	cmp	r2, #6
+	it	ls
+	movls	r3, r2
+	bhi	.L29
+.L3:
+	ldr	r4, [r0]
+	cmp	r3, #1
+	it	ls
+	movls	r1, #1
+	asr	r5, r4, #31
+	bls	.L5
+	ldr	r1, [r0, #4]
+	adds	r4, r4, r1
+	adc	r5, r5, r1, asr #31
+	cmp	r3, #2
+	it	ls
+	movls	r1, #2
+	bls	.L5
+	ldr	r1, [r0, #8]
+	adds	r4, r4, r1
+	adc	r5, r5, r1, asr #31
+	cmp	r3, #3
+	it	ls
+	movls	r1, #3
+	bls	.L5
+	ldr	r1, [r0, #12]
+	adds	r4, r4, r1
+	adc	r5, r5, r1, asr #31
+	cmp	r3, #4
+	it	ls
+	movls	r1, #4
+	bls	.L5
+	ldr	r1, [r0, #16]
+	adds	r4, r4, r1
+	adc	r5, r5, r1, asr #31
+	cmp	r3, #5
+	it	ls
+	movls	r1, #5
+	bls	.L5
+	ldr	r6, [r0, #20]
+	movs	r1, #6
+	adds	r4, r4, r6
+	adc	r5, r5, r6, asr #31
+.L5:
+	cmp	r2, r3
+	beq	.L6
+	rsb	lr, r3, r2
+	lsr	r7, lr, #2
+	lsl	ip, r7, #2
+	cbz	r7, .L7
+.L30:
+	vmov.i32	q9, #0  @ v2di
+	add	r3, r0, r3, lsl #2
+	movs	r6, #0
+.L13:
+	vld1.64	{d16-d17}, [r3:64]!
+	adds	r6, r6, #1
+	cmp	r7, r6
+	vmovl.s32 q10, d16
+	vmovl.s32 q8, d17
+	vadd.i64	q9, q10, q9
+	vadd.i64	q9, q8, q9
+	bhi	.L13
+	vadd.i64	d18, d18, d19
+	add	r1, r1, ip
+	vmov	r6, r7, d18  @ v2di
+	adds	r4, r4, r6
+	adcs	r5, r5, r7
+	cmp	lr, ip
+	beq	.L6
+.L7:
+	ldr	r6, [r0, r1, lsl #2]
+	adds	r3, r1, #1
+	adds	r4, r4, r6
+	adc	r5, r5, r6, asr #31
+	cmp	r2, r3
+	ble	.L6
+	ldr	r3, [r0, r3, lsl #2]
+	adds	r1, r1, #2
+	adds	r4, r4, r3
+	adc	r5, r5, r3, asr #31
+	cmp	r2, r1
+	ble	.L6
+	ldr	r3, [r0, r1, lsl #2]
+	adds	r4, r4, r3
+	adc	r5, r5, r3, asr #31
+.L6:
+	mov	r0, r4
+	mov	r1, r5
+	asrs	r3, r2, #31
+	bl	__aeabi_ldivmod
+	pop	{r3, r4, r5, r6, r7, pc}
+.L29:
+	cmp	r3, #0
+	bne	.L3
+	rsb	lr, r3, r2
+	movs	r4, #0
+	movs	r5, #0
+	mov	r1, r3
+	lsr	r7, lr, #2
+	lsl	ip, r7, #2
+	cmp	r7, #0
+	bne	.L30
+	b	.L7
+.L14:
+	movs	r0, #0
+	bx	lr
+	.size	int_average, .-int_average
+	.section	.text.startup,"ax",%progbits
+	.align	2
+	.global	main
+	.thumb
+	.thumb_func
+	.type	main, %function
+main:
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	@ link register save eliminated.
+	movs	r0, #0
+	bx	lr
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu/Linaro 4.8.5-4ubuntu1) 4.8.5"
+	.section	.note.GNU-stack,"",%progbits
