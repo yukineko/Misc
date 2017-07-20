@@ -17,5 +17,6 @@ void clearData(float* data, int size);
 void printMatrixInt(int* A, const int x, const int y);
 void initAtNum(int* A, size_t size, int val);
 void initDataSeq(int* A, size_t size);
+int checkResult(float* A, float* B, size_t size);
 void cudaDeviceInit(int dev);
 #endif

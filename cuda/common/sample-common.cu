@@ -3,9 +3,13 @@
 #include <sys/time.h>
 
 double cpuSecond(){
-    struct timeval tp;
-    gettimeofday(&tp, NULL);
-    return ((double)tp.tv_sec + (double)tp.tv_usec * 1.e-6 );
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    double sec = ts.tv_sec;
+    double usec = (double)ts.tv_nsec / (double)(1000 * 1000 * 1000);
+    //    printf("sec = %f\n", sec);
+    //    printf("usec = %f\n", usec);
+    return sec + usec;
 }
 
 void initialData(float* data, int size){
@@ -55,4 +59,13 @@ void cudaDeviceInit(int dev){
     CHECK(cudaGetDeviceProperties(&prop, dev));
     printf("Using device %d, %s\n", dev, prop.name);
     CHECK(cudaSetDevice(dev));
+}
+
+int checkResult(float* A, float* B, size_t size){
+    for(int i = 0;i < size; i++){
+        if(A[i] != B[i]){
+            return i;
+        }
+    }
+    return 0;
 }
