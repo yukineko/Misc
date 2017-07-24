@@ -13,6 +13,7 @@
 
 double cpuSecond();
 void initialData(float* data, int size);
+void initialDataInt(int* data, int size);
 void clearData(float* data, int size);
 void printMatrixInt(int* A, const int x, const int y);
 void initAtNum(int* A, size_t size, int val);

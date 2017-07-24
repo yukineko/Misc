@@ -21,6 +21,15 @@ void initialData(float* data, int size){
     }
 }
 
+void initialDataInt(int* data, int size){
+    time_t t;
+    srand((unsigned) time(&t));
+
+    for(int i = 0; i < size; i++){
+        data[i] = (int)(rand() & 0xff);
+    }
+}
+
 void clearData(float* data, int size){
     for(int i = 0; i < size; i++){
         data[i] = 0;
