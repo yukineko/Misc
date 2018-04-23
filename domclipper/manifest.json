@@ -1,0 +1,32 @@
+{
+  "name": "Hello World in Console",
+  "version": "0.0.5",
+  "manifest_version": 2,
+  "description": "This is an example to print Hello World in Chrome console",
+  // "icons": {
+  //   "16": "icons/icon16.png",
+  //   "48": "icons/icon48.png",
+  //   "128": "icons/icon128.png"
+  // },
+  "content_scripts": [
+      {
+	  "matches": [
+	      "https://*/*",
+	      "http://*/*"
+	  ],
+	  "js": [
+	      "./libs/jquery.js",
+	      "./js/content-script.js"
+	  ]
+      }
+  ],
+  "permissions": [
+      "https://*/*",
+      "http://*/*",
+      "activeTab"
+  ]    ,
+  "background": {
+    "persistent": false,
+    "scripts": [ "./js/background.js" ]
+  }
+}
