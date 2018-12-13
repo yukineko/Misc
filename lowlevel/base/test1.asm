@@ -5,11 +5,14 @@ section .text
 
 extern exit
 extern print_newline
-extern print_hex
+extern print_string
+extern print_uint
+	
 _start:
-	;	mov rdi, test_string
-	mov rdi, 0x0
-	call print_hex
-	call print_newline	
+	call print_newline
+	mov rdi, test_string
+	call print_string
+	mov rdi, 33
+	call print_uint
 	call exit
 	

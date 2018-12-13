@@ -10,7 +10,6 @@ strlen:
 	je .end
 	inc rax
 	jmp .loop
-
 .end:
 	ret
 _start:
