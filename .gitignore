@@ -2,7 +2,9 @@ core
 *.exe
 *.o
 *.wav
+*.tsv
 a.out
+
 through
 wavheader
 delay
