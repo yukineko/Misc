@@ -1,0 +1,3 @@
+# MySQLのCREATEスクリプトからカラムとかを抜きだすなにか
+
+localのDirectryにtsvをdumpするよ

@@ -77,7 +77,7 @@ class AnalyzeScript
       line.strip!
       elems = line.split(/[\s+|\(|\)|,]/)
       elems = elems.select{|e| e != ""}
-      if ["INDEX", "CONSTRAINT", "UNIQUE"].first.include?(elems.first)
+      if ["KEY", "INDEX", "CONSTRAINT", "UNIQUE"].first.include?(elems.first)
        # DB constraint
         @mode = CONSTRAINT
       elsif ["ENGINE", "AUTO_INCREMENT", "DEFAULT"].include?(elems.first)
@@ -139,9 +139,14 @@ class AnalyzeScript
       end
 
       return if attrs.length < pos + 1      
-      if ["UNSIGNED", "BINARY"].include?(attrs[pos])
-        @type_option = attrs[pos]
-        pos += 1
+      if ["UNSIGNED", "BINARY", "COLLATE"].include?(attrs[pos])
+        if attrs[pos] == "COLLATE"
+          @type_option = attrs[pos] + " " + attrs[pos + 1]
+          pos += 2
+        else
+          @type_option = attrs[pos]
+          pos += 1          
+        end
       end
 
       return if attrs.length < pos + 1      
